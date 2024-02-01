@@ -129,7 +129,7 @@ app.use(express.json());
 main().catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/blog_db");
+  await mongoose.connect("mongodb+srv://souravoz2018:E4UOt6dJlytZY8A8@cluster0.pkddqg6.mongodb.net/?retryWrites=true&w=majority");
 }
 
 /////////////////////////////////////////////////////////////1
