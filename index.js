@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const mysql = require ('mysql')
 var app = express();
 
-ap.use(cors(
+app.use(cors(
   {
     origin: ["https//orion-server-1whq.vercel.app"],
     methods:["POST","GET"],
