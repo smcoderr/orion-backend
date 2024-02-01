@@ -7,6 +7,14 @@ const bodyParser = require('body-parser');
 const mysql = require ('mysql')
 var app = express();
 
+ap.use(cors(
+  {
+    origin: ["https//orion-server-1whq.vercel.app"],
+    methods:["POST","GET"],
+    credentials:true
+  }
+  ));
+
 const upload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
