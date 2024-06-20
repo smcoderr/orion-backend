@@ -4,7 +4,6 @@ const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const bodyParser = require("body-parser");
-const mysql = require("mysql");
 var app = express();
 require('dotenv').config();
 
@@ -25,80 +24,6 @@ const upload = multer({
     },
   }),
 });
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-// const db = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: "",
-//   database: "crud",
-//   connectionLimit:10
-// });
-
-// // Connect to MySQL
-// db.connect((err) => {
-//   if (err) {
-//     throw err;
-//   }
-//   console.log('Connected to MySQL database');
-// });
-
-// // Routes
-
-// // Read operation
-// app.get('/getaddelectrical', (req, res) => {
-//   const sql = "SELECT * FROM book";
-//   db.query(sql, (err, data) => {
-//     if (err) {
-//       return res.json({ error: "error" });
-//     }
-//     return res.json(data);
-//   });
-// });
-
-// // Create operation
-// app.post('/addelectrical', (req, res) => {
-//   const sql = "INSERT INTO book (productname, description, file) VALUES (?, ?, ?)";
-//   const values = [
-//     req.body.productname,
-//     req.body.description,
-//     req.body.file
-//   ];
-//   db.query(sql, values, (err, data) => {
-//     if (err) {
-//       return res.json({ error: "error" });
-//     }
-//     return res.json(data);
-//   });
-// });
-
-// // Update operation
-// app.put('/updateelectrical/:id', (req, res) => {
-//   const sql = "UPDATE book SET productname=?, description=?, file=? WHERE id=?";
-//   const values = [
-//     req.body.productname,
-//     req.body.description,
-//     req.body.file,
-//     req.params.id
-//   ];
-//   db.query(sql, values, (err, data) => {
-//     if (err) {
-//       return res.json({ error: "error" });
-//     }
-//     return res.json(data);
-//   });
-// });
-
-// // Delete operation
-// app.delete('/delete/:id', (req, res) => {
-//   const sql = "DELETE FROM book WHERE id=?";
-//   const id = req.params.id;
-//   db.query(sql, id, (err, data) => {
-//     if (err) {
-//       return res.json({ error: "error" });
-//     }
-//     return res.json(data);
-//   });
-// });
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 const productImageUpload = multer({
   storage: multer.diskStorage({
@@ -127,6 +52,27 @@ main().catch((err) => console.log(err));
 async function main() {
   await mongoose.connect("mongodb+srv://souravoz2018:E4UOt6dJlytZY8A8@cluster0.pkddqg6.mongodb.net/sourav");
 }
+
+
+
+
+////////////////////////////////////////////////////////////
+//schema create
+const cardSchema=new mongoose.Schema(
+  {'productname':String}
+,{'timestamps':true})
+
+//model create
+const cardModel=mongoose.model('pname',cardSchema)
+app.post("/NewProducts",(req,res)=>{
+  const productname=req.body.pname;
+  const productdesc=req.body.pdesc;
+  console.log(productname)
+  //database
+  cardModel.create({ProductName:productname})
+  res.json("successfully")
+})
+
 
 /////////////////////////////////////////////////////////////1
 //schema create
@@ -187,11 +133,15 @@ app.post("/fullScreenBtn", (req, res) => {
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log(error);
+        res.status(500).send({ error: "Failed to send email" });
       } else {
         console.log("Email sent: " + info.response);
+        res.send({ msg1: "message sent successfully" });
       }
     });
-    res.send({ msg1: "message send successfuly" });
+  }).catch(error => {
+    console.error("Error saving document:", error);
+    res.status(500).send({ error: "Failed to save data" });
   });
 });
 
@@ -200,7 +150,7 @@ app.post("/fullScreenBtn", (req, res) => {
 const directContactSchemaSchema = new mongoose.Schema({
   name: String,
   email: String,
-  mail: String,
+  message: String,
 });
 
 //model create
@@ -213,18 +163,19 @@ const directContactmodel = mongoose.model(
 app.post("/contact", (req, res) => {
   var name = req.body.name;
   var email = req.body.email;
-  var mailc = req.body.mailc;
+  var message = req.body.message;
 
   const table = new directContactmodel({
     name: name,
     email: email,
-    message: mailc,
+    message: message,
   });
 
   table.save().then((savedDocument) => {
     // Access the 'name' and 'email' properties of the saved document
     console.log("Name:", savedDocument.name);
     console.log("Email:", savedDocument.email);
+    console.log("Message:", savedDocument.message);
 
     var nodemailer = require("nodemailer");
 
@@ -1065,6 +1016,75 @@ app.post("/otherGeneralItems", (req, res) => {
     res.send({ msg14: "enquire send successfully" });
   });
 });
+//////////////////////////////////////////////////////////////////15
+//schema create
+const directContactinfoSchemaSchema = new mongoose.Schema({
+  name: String,
+  email: String,
+  phone: String,
+  subject: String,
+  message: String,
+});
+
+//model create
+const directContactinfomodel = mongoose.model(
+  "directContactinfo_tbl",
+  directContactinfoSchemaSchema
+);
+
+//apifor register
+app.post("/contactinfo", (req, res) => {
+  var name = req.body.name;
+  var email = req.body.email;
+  var phone = req.body.phone;
+  var subject = req.body.subject;
+  var message = req.body.message;
+
+  const table = new directContactinfomodel({
+    name: name,
+    email: email,
+    phone: phone,
+    subject: subject,
+    message: message,
+  });
+
+  table.save().then((savedDocument) => {
+    // Access the 'name' and 'email' properties of the saved document
+    console.log("Name:", savedDocument.name);
+    console.log("Email:", savedDocument.email);
+    console.log("Phone:", savedDocument.phone);
+    console.log("Subject:", savedDocument.subject);
+    console.log("Message:", savedDocument.message);
+
+    var nodemailer = require("nodemailer");
+
+    var transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "souravoz2018@gmail.com",
+        pass: "zneq wfaa eunz cacv",
+      },
+    });
+
+    var mailOptions = {
+      from: "souravoz2018@gmail.com",
+      to: "developer.clazzo1@gmail.com",
+      subject: "Direct Contact",
+      text: `Name: ${savedDocument.name}\nEmail: ${savedDocument.email}\nContent: ${savedDocument.message}\nPhone: ${savedDocument.phone}\nSubject: ${savedDocument.subject}`,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+
+    res.send({ msg15: "email sent Successfully" });
+  });
+});
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const addfittingsSchema = new mongoose.Schema({
   productname: String,
@@ -1156,62 +1176,59 @@ app.get("/getFittingsProduct/:id", (req, res) => {
 });
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-const productSchema = new mongoose.Schema({
+
+// Define schema for favorite product
+const favoriteProductSchema = new mongoose.Schema({
   productname: String,
   description: String,
   image: String,
-  // Add other fields as needed
+  // Add more fields as needed
 });
 
-const Productmodel = mongoose.model("Product", productSchema);
+// Create model for favorite product
+const FavoriteProduct = mongoose.model("FavoriteProduct", favoriteProductSchema);
 
-// Middleware to parse JSON in the request body
-app.use(bodyParser.json());
-
-// Endpoint to register a favorite product
-app.post(
-  "/registerFavoriteProduct",
-  upload.single("file"),
-  async (req, res) => {
-    try {
-      // Check if a product with the same ID already exists
-      const existingProduct = await Productmodel.findOne({
-        productname: req.body.productname,
-      });
-
-      if (existingProduct) {
-        // Product with the same name already exists
-        return res
-          .status(400)
-          .json({
-            success: false,
-            error1: "Product is already registered as a favorite",
-          });
-      }
-
-      // Create a new Product instance with the request body
-      const newProduct = new Productmodel(req.body);
-
-      // Save the product to MongoDB
-      await newProduct.save();
-
-      // Respond with a success message
-      res
-        .status(200)
-        .json({ success: true, message: "Product registered successfully" });
-    } catch (error) {
-      // Handle errors
-      console.error("Error registering product:", error);
-      res.status(500).json({ success: false, error: "Internal server error" });
-    }
+// Route to register favorite product
+app.post("/registerFavoriteProduct", async (req, res) => {
+  try {
+    const { productname, description, image } = req.body;
+    // Create new favorite product instance
+    const newFavoriteProduct = new FavoriteProduct({
+      productname,
+      description,
+      image,
+    });
+    // Save the favorite product to the database
+    await newFavoriteProduct.save();
+    res.json({ message: "Product registered successfully" });
+  } catch (error) {
+    console.error("Error registering product:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
-);
-
+});
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
-app.get("/favoritePage", (req, res) => {
-  Productmodel.find({})
-    .then((users) => res.json(users))
-    .catch((err) => res.json(err));
+
+// Route to get all favorite products
+app.get("/favoriteProducts", async (req, res) => {
+  try {
+    const favoriteProducts = await FavoriteProduct.find();
+    res.json(favoriteProducts);
+  } catch (error) {
+    console.error("Error fetching favorite products:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Route to delete a favorite product
+app.delete("/deleteFavoriteProduct/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    await FavoriteProduct.findByIdAndDelete(id);
+    res.json({ message: "Favorite product deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting favorite product:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 });
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 //delete from fav
@@ -2189,5 +2206,5 @@ app.delete("/deleteotherGeneralItems/:id", async (req, res) => {
 const port = process.env.PORT || 9000;
 //listen
 app.listen(port, () => {
-  console.log("server running http://localhost:${port}/");
+  console.log("server running http://localhost:9000/");
 });

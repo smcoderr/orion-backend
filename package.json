@@ -1,12 +1,14 @@
 {
   "name": "server",
+  "homepage": "https://orion-clazzo.000webhostapp.com/",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm run vercel-build"
+    "build": "npm run vercel-build",
+    "predeploy": "npm run build"
   },
   "keywords": [],
   "author": "",
