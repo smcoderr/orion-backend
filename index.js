@@ -6,15 +6,11 @@ const path = require("path");
 const bodyParser = require("body-parser");
 const mysql = require("mysql");
 var app = express();
+require('dotenv').config();
 
 
-app.use(cors(
-  {
-    origin: ["https//orion-server-1whq.vercel.app"],
-    methods:["POST","GET"],
-    credentials:true
-  }
-  ));
+
+app.use(cors());
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -129,7 +125,7 @@ app.use(express.json());
 main().catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect("mongodb+srv://souravoz2018:E4UOt6dJlytZY8A8@cluster0.pkddqg6.mongodb.net/?retryWrites=true&w=majority");
+  await mongoose.connect("mongodb+srv://souravoz2018:E4UOt6dJlytZY8A8@cluster0.pkddqg6.mongodb.net/sourav");
 }
 
 /////////////////////////////////////////////////////////////1
@@ -2193,5 +2189,5 @@ app.delete("/deleteotherGeneralItems/:id", async (req, res) => {
 const port = process.env.PORT || 9000;
 //listen
 app.listen(port, () => {
-  console.log("server running http://localhost:9000/");
+  console.log("server running http://localhost:${port}/");
 });

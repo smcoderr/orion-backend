@@ -3,6 +3,11 @@
     "build":[
         {"src":"*.js","use":"@vercel/node"}
     ],
+    
+        "scripts": {
+          "build": "your_build_commands_here"
+        }
+      ,      
     "routes":[
         {
             "src":"/(.*)",
